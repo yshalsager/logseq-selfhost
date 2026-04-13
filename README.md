@@ -10,6 +10,34 @@ It includes:
 - GitHub Actions workflow that tracks the latest upstream commit touching `deps/db-sync` and opens a PR
 - `UPSTREAM_DB_SYNC_REF` as the pinned upstream commit used by default builds
 
+## Upstream Logseq URLs
+
+- [Logseq repository](https://github.com/logseq/logseq)
+- Custom Sync Server URL support PR: [logseq/logseq#12459](https://github.com/logseq/logseq/pull/12459)
+- `deps/db-sync` node-adapter [README.md](https://github.com/logseq/logseq/blob/master/deps/db-sync/README.md)
+- [Logseq releases](https://github.com/logseq/logseq/releases/latest)
+- [Logseq Android (Play Store)](https://play.google.com/store/apps/details?id=com.logseq.app)
+
+## 0) Local tooling with `mise`
+
+Mise docs: [mise.jdx.dev](https://mise.jdx.dev/)
+
+Install pinned tool versions from `mise.toml`:
+
+```bash
+mise install
+```
+
+Optional quick check:
+
+```bash
+mise exec -- node -v
+mise exec -- java -version
+mise exec -- clojure -Sdescribe
+```
+
+The Docker build also uses `mise.toml` and a pinned `MISE_VERSION` in `Dockerfile` for reproducible builds.
+
 ## 1) Configure environment
 
 ```bash
