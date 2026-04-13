@@ -65,7 +65,7 @@ Workflow file: `.github/workflows/build-sync-image.yml`
 Triggers:
 - Manual (`workflow_dispatch`) with optional `logseq_ref` and `image_tag`
 - Weekly schedule (Saturday 04:00 UTC fallback)
-- Push changes to `Dockerfile`, `UPSTREAM_DB_SYNC_REF`, or workflow on `main`
+- Push changes to `Dockerfile`, `UPSTREAM_DB_SYNC_REF`, or workflow on `master`
 
 By default, the build uses `UPSTREAM_DB_SYNC_REF` (latest known upstream commit for `deps/db-sync`).
 You can override it manually with `workflow_dispatch` input `logseq_ref`.
@@ -73,7 +73,7 @@ Build toolchain versions are pinned in `mise.toml`.
 
 The workflow publishes to:
 - `ghcr.io/<GHCR_OWNER>/logseq-sync-server:<tag>`
-- `ghcr.io/<GHCR_OWNER>/logseq-sync-server:latest` (for `main` builds)
+- `ghcr.io/<GHCR_OWNER>/logseq-sync-server:latest` (for `master` builds)
 
 ### GHCR package access
 

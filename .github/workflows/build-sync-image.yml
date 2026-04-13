@@ -15,7 +15,7 @@ on:
     - cron: "0 4 * * 6"
   push:
     branches:
-      - main
+      - master
     paths:
       - Dockerfile
       - UPSTREAM_DB_SYNC_REF
@@ -30,10 +30,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  meta:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
-
+    outputs:
+      image_repo: ${{ steps.vars.outputs.image_repo }}
+      image_tag: ${{ steps.vars.outputs.image_tag }}
+      logseq_ref: ${{ steps.vars.outputs.logseq_ref }}
+      publish_latest: ${{ steps.vars.outputs.publish_latest }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6.0.2
@@ -43,6 +46,7 @@ jobs:
         shell: bash
         run: |
           owner='${{ github.repository_owner }}'
+          image_repo="ghcr.io/${owner}/logseq-sync-server"
           tracked_ref="$(tr -d '\r\n' < UPSTREAM_DB_SYNC_REF 2>/dev/null || true)"
 
           if [[ -n '${{ inputs.logseq_ref }}' ]]; then
@@ -60,20 +64,40 @@ jobs:
             image_tag="$(date +%Y%m%d)-${short_ref}"
           fi
 
+          default_branch='${{ github.event.repository.default_branch }}'
+          publish_latest=false
+          if [[ '${{ github.ref_name }}' == "$default_branch" ]]; then
+            publish_latest=true
+          fi
+
           {
-            echo "owner=$owner"
-            echo "logseq_ref=$logseq_ref"
+            echo "image_repo=$image_repo"
             echo "image_tag=$image_tag"
-            echo 'tags<<EOF'
-            echo "ghcr.io/$owner/logseq-sync-server:$image_tag"
-            if [[ '${{ github.ref_name }}' == 'main' ]]; then
-              echo "ghcr.io/$owner/logseq-sync-server:latest"
-            fi
-            echo 'EOF'
+            echo "logseq_ref=$logseq_ref"
+            echo "publish_latest=$publish_latest"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4.0.0
+  build:
+    needs: meta
+    runs-on: ${{ matrix.platform == 'linux/arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+
+      - name: Set build vars
+        shell: bash
+        run: |
+          platform='${{ matrix.platform }}'
+          platform_pair="${platform//\//-}"
+          echo "PLATFORM_PAIR=${platform_pair}" >> "$GITHUB_ENV"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4.0.0
@@ -82,24 +106,102 @@ jobs:
         uses: docker/login-action@v4.1.0
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
+          username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push
+      - name: Build and push by digest
+        id: build
         uses: docker/build-push-action@v7.1.0
         with:
           context: .
           file: Dockerfile
           push: true
-          platforms: linux/amd64,linux/arm64
+          platforms: ${{ matrix.platform }}
+          outputs: type=image,push-by-digest=true,name-canonical=true,push=true
           build-args: |
-            LOGSEQ_REF=${{ steps.vars.outputs.logseq_ref }}
-          tags: ${{ steps.vars.outputs.tags }}
+            LOGSEQ_REF=${{ needs.meta.outputs.logseq_ref }}
+          tags: ${{ needs.meta.outputs.image_repo }}
           provenance: false
           sbom: false
           cache-from: |
-            type=gha,scope=logseq-sync-server
-            type=registry,ref=ghcr.io/${{ steps.vars.outputs.owner }}/logseq-sync-server:buildcache
+            type=gha,scope=logseq-sync-server-${{ env.PLATFORM_PAIR }}
+            type=registry,ref=${{ needs.meta.outputs.image_repo }}:buildcache-${{ env.PLATFORM_PAIR }}
           cache-to: |
-            type=gha,scope=logseq-sync-server,mode=max
-            type=registry,ref=ghcr.io/${{ steps.vars.outputs.owner }}/logseq-sync-server:buildcache,mode=max
+            type=gha,scope=logseq-sync-server-${{ env.PLATFORM_PAIR }},mode=max
+            type=registry,ref=${{ needs.meta.outputs.image_repo }}:buildcache-${{ env.PLATFORM_PAIR }},mode=max
+
+      - name: Export digest
+        shell: bash
+        run: |
+          mkdir -p "${{ runner.temp }}/digests"
+          digest='${{ steps.build.outputs.digest }}'
+          touch "${{ runner.temp }}/digests/${digest#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ env.PLATFORM_PAIR }}
+          path: ${{ runner.temp }}/digests
+          if-no-files-found: error
+          retention-days: 1
+
+  merge:
+    needs:
+      - meta
+      - build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v4
+        with:
+          path: ${{ runner.temp }}/digests
+          pattern: digests-*
+          merge-multiple: true
+
+      - name: Login to GHCR
+        uses: docker/login-action@v4.1.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4.0.0
+
+      - name: Create manifest list
+        shell: bash
+        working-directory: ${{ runner.temp }}/digests
+        run: |
+          set -euo pipefail
+          image='${{ needs.meta.outputs.image_repo }}'
+          image_tag='${{ needs.meta.outputs.image_tag }}'
+
+          args=()
+          while IFS= read -r digest; do
+            if [[ "$digest" =~ ^[0-9a-f]{64}$ ]]; then
+              args+=("${image}@sha256:${digest}")
+            fi
+          done < <(find . -type f -exec basename {} \; | sort -u)
+
+          if [[ "${#args[@]}" -eq 0 ]]; then
+            echo "No digests found" >&2
+            exit 1
+          fi
+
+          tags=("-t" "${image}:${image_tag}")
+          if [[ '${{ needs.meta.outputs.publish_latest }}' == 'true' ]]; then
+            tags+=("-t" "${image}:latest")
+          fi
+
+          docker buildx imagetools create "${tags[@]}" "${args[@]}"
+
+      - name: Inspect published tags
+        shell: bash
+        run: |
+          image='${{ needs.meta.outputs.image_repo }}'
+          image_tag='${{ needs.meta.outputs.image_tag }}'
+          docker buildx imagetools inspect "${image}:${image_tag}"
+          if [[ '${{ needs.meta.outputs.publish_latest }}' == 'true' ]]; then
+            docker buildx imagetools inspect "${image}:latest"
+          fi
