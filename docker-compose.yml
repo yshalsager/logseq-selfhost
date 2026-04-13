@@ -3,10 +3,10 @@ services:
     image: ghcr.io/${GHCR_OWNER:-yshalsager}/logseq-sync-server:${IMAGE_TAG:-latest}
     container_name: logseq-sync-server
     env_file:
-      - path: .env
-        required: false
       - path: .env.example
         required: true
+      - path: .env
+        required: false
     ports:
       - '${SYNC_PORT:-8787}:8787'
     volumes:
