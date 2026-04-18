@@ -1,4 +1,4 @@
 [tools]
-node = '22.22.2'
+node = '22'
 java = 'openjdk-21.0.2'
-clojure = '1.11.4.1474'
+clojure = '1.12'
