@@ -1,5 +1,5 @@
-# syntax=docker/dockerfile:1.7
-FROM debian:trixie-slim AS build
+# syntax=docker/dockerfile:1.23@sha256:2780b5c3bab67f1f76c781860de469442999ed1a0d7992a5efdf2cffc0e3d769
+FROM debian:trixie-slim@sha256:4ffb3a1511099754cddc70eb1b12e50ffdb67619aa0ab6c13fcd800a78ef7c7a AS build
 ARG LOGSEQ_REF=test/db
 ARG MISE_VERSION=v2026.4.11
 
@@ -43,7 +43,7 @@ RUN --mount=type=cache,target=/root/.cache/yarn \
 
 RUN mkdir -p /tmp/web && rsync -a --delete /src/static/ /tmp/web/
 
-FROM nginxinc/nginx-unprivileged:stable-alpine
+FROM nginxinc/nginx-unprivileged:stable-alpine@sha256:7377697a821c131a924a7105fafbe7414db4e9fcc77a6f08f776f33f141ec3f8
 COPY images/web/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --chown=101:101 --from=build /tmp/web/ /usr/share/nginx/html/
 

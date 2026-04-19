@@ -1,5 +1,5 @@
-# syntax=docker/dockerfile:1.7
-FROM debian:trixie-slim AS build
+# syntax=docker/dockerfile:1.23@sha256:2780b5c3bab67f1f76c781860de469442999ed1a0d7992a5efdf2cffc0e3d769
+FROM debian:trixie-slim@sha256:4ffb3a1511099754cddc70eb1b12e50ffdb67619aa0ab6c13fcd800a78ef7c7a AS build
 ARG LOGSEQ_REF=master
 ARG MISE_VERSION=v2026.4.11
 
@@ -38,7 +38,7 @@ RUN --mount=type=cache,target=/root/.m2/repository mise exec -- npm run build:no
 RUN mise exec -- npm prune --omit=dev
 RUN mkdir -p /tmp/runtime-data
 
-FROM gcr.io/distroless/nodejs24-debian12:nonroot
+FROM gcr.io/distroless/nodejs24-debian12:nonroot@sha256:14d42e2511532589a7c7e01a753667a74fcc96266e137e8125006b87b0c32d0a
 WORKDIR /app
 
 COPY --chown=nonroot:nonroot --from=build /src/deps/db-sync/package.json /app/package.json
