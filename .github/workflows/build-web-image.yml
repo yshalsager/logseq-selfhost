@@ -1,4 +1,4 @@
-name: build-sync-image
+name: build-web-image
 
 on:
   workflow_dispatch:
@@ -17,10 +17,10 @@ on:
     branches:
       - master
     paths:
-      - images/sync/**
+      - images/web/**
       - mise.toml
       - .github/workflows/build-image-reusable.yml
-      - .github/workflows/build-sync-image.yml
+      - .github/workflows/build-web-image.yml
 
 permissions:
   contents: read
@@ -30,12 +30,12 @@ jobs:
   build:
     uses: ./.github/workflows/build-image-reusable.yml
     with:
-      image_name: logseq-sync-server
-      dockerfile: images/sync/Dockerfile
-      tracked_ref_file: images/sync/UPSTREAM_DB_SYNC_REF
-      default_logseq_ref: master
-      cache_scope: logseq-sync-server
-      build_timeout_minutes: 60
+      image_name: logseq-web
+      dockerfile: images/web/Dockerfile
+      tracked_ref_file: images/web/UPSTREAM_LOGSEQ_DB_REF
+      default_logseq_ref: test/db
+      cache_scope: logseq-web
+      build_timeout_minutes: 90
       logseq_ref: ${{ github.event.inputs.logseq_ref || '' }}
       image_tag: ${{ github.event.inputs.image_tag || '' }}
     secrets: inherit

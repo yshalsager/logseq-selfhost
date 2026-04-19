@@ -29,7 +29,7 @@
   customManagers: [
     {
       customType: 'regex',
-      managerFilePatterns: ['/^Dockerfile$/'],
+      managerFilePatterns: ['/(^|/)Dockerfile$/'],
       matchStrings: ['ARG MISE_VERSION=(?<currentValue>[^\\n]+)'],
       depNameTemplate: 'jdx/mise',
       datasourceTemplate: 'github-releases',

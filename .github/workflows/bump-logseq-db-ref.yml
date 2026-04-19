@@ -1,0 +1,24 @@
+name: bump-logseq-db-ref
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * 6'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump:
+    uses: ./.github/workflows/bump-upstream-ref-reusable.yml
+    with:
+      tracked_ref_file: images/web/UPSTREAM_LOGSEQ_DB_REF
+      fetch_mode: branch_head
+      upstream_branch: test/db
+      pr_branch: chore/bump-logseq-db-ref
+      commit_prefix: 'chore: bump Logseq DB upstream ref to '
+      title_prefix: 'chore: bump Logseq DB upstream ref to '
+      body_intro: Automated update of upstream Logseq commit used for DB web image builds.
+      empty_error: Failed to resolve latest test/db commit SHA from upstream
+    secrets: inherit

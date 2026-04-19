@@ -1,0 +1,21 @@
+services:
+  web:
+    image: ghcr.io/${GHCR_OWNER:-yshalsager}/logseq-web:${IMAGE_TAG:-latest}
+    container_name: logseq-web
+    env_file:
+      - path: .env.example
+        required: true
+      - path: .env
+        required: false
+    ports:
+      - '${WEB_PORT:-3001}:8080'
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/cache/nginx
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    pull_policy: always

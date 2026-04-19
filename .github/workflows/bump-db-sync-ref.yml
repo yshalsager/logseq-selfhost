@@ -3,7 +3,7 @@ name: bump-db-sync-ref
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 3 * * 6"
+    - cron: '0 3 * * 6'
 
 permissions:
   contents: write
@@ -11,64 +11,15 @@ permissions:
 
 jobs:
   bump:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6.0.2
-
-      - name: Fetch latest db-sync commit
-        id: latest
-        shell: bash
-        run: |
-          latest_sha="$(curl -fsSL 'https://api.github.com/repos/logseq/logseq/commits?sha=master&path=deps/db-sync&per_page=1' | jq -r '.[0].sha')"
-          if [[ -z "$latest_sha" || "$latest_sha" == "null" ]]; then
-            echo 'Failed to resolve latest db-sync commit SHA from upstream' >&2
-            exit 1
-          fi
-          echo "sha=$latest_sha" >> "$GITHUB_OUTPUT"
-
-      - name: Update tracked ref
-        id: update
-        shell: bash
-        run: |
-          current_sha=''
-          if [[ -f UPSTREAM_DB_SYNC_REF ]]; then
-            current_sha="$(tr -d '\r\n' < UPSTREAM_DB_SYNC_REF)"
-          fi
-
-          latest_sha='${{ steps.latest.outputs.sha }}'
-
-          if [[ "$latest_sha" == "$current_sha" ]]; then
-            echo 'changed=false' >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          echo "$latest_sha" > UPSTREAM_DB_SYNC_REF
-          echo "changed=true" >> "$GITHUB_OUTPUT"
-          echo "old_sha=$current_sha" >> "$GITHUB_OUTPUT"
-          echo "new_sha=$latest_sha" >> "$GITHUB_OUTPUT"
-
-          if [[ -n "$current_sha" ]]; then
-            echo "compare_line=- Compare: https://github.com/logseq/logseq/compare/$current_sha...$latest_sha" >> "$GITHUB_OUTPUT"
-          else
-            echo 'compare_line=' >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Create pull request
-        if: steps.update.outputs.changed == 'true'
-        uses: peter-evans/create-pull-request@v8.1.1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: chore/bump-db-sync-ref
-          delete-branch: true
-          add-paths: |
-            UPSTREAM_DB_SYNC_REF
-          commit-message: "chore: bump db-sync upstream ref to ${{ steps.update.outputs.new_sha }}"
-          title: "chore: bump db-sync upstream ref to ${{ steps.update.outputs.new_sha }}"
-          body: |
-            Automated update of upstream Logseq commit used for db-sync image builds.
-
-            - Previous: `${{ steps.update.outputs.old_sha }}`
-            - Current: `${{ steps.update.outputs.new_sha }}`
-            ${{ steps.update.outputs.compare_line }}
+    uses: ./.github/workflows/bump-upstream-ref-reusable.yml
+    with:
+      tracked_ref_file: images/sync/UPSTREAM_DB_SYNC_REF
+      fetch_mode: path_commit
+      upstream_branch: master
+      upstream_path: deps/db-sync
+      pr_branch: chore/bump-db-sync-ref
+      commit_prefix: 'chore: bump db-sync upstream ref to '
+      title_prefix: 'chore: bump db-sync upstream ref to '
+      body_intro: Automated update of upstream Logseq commit used for db-sync image builds.
+      empty_error: Failed to resolve latest db-sync commit SHA from upstream
+    secrets: inherit

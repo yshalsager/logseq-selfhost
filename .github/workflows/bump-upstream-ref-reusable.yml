@@ -1,0 +1,123 @@
+name: bump-upstream-ref-reusable
+
+on:
+  workflow_call:
+    inputs:
+      tracked_ref_file:
+        description: Path to pinned upstream ref file from repository root
+        required: true
+        type: string
+      fetch_mode:
+        description: path_commit or branch_head
+        required: true
+        type: string
+      upstream_branch:
+        description: Upstream Logseq branch to inspect
+        required: true
+        type: string
+      upstream_path:
+        description: Path filter used when fetch_mode=path_commit
+        required: false
+        default: ''
+        type: string
+      pr_branch:
+        description: Pull request branch name
+        required: true
+        type: string
+      commit_prefix:
+        description: Prefix for commit message (SHA appended)
+        required: true
+        type: string
+      title_prefix:
+        description: Prefix for pull request title (SHA appended)
+        required: true
+        type: string
+      body_intro:
+        description: Intro text used in pull request body
+        required: true
+        type: string
+      empty_error:
+        description: Error message when latest SHA cannot be resolved
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+
+      - name: Resolve latest upstream SHA
+        id: latest
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ '${{ inputs.fetch_mode }}' == 'path_commit' ]]; then
+            latest_sha="$(curl -fsSL "https://api.github.com/repos/logseq/logseq/commits?sha=${{ inputs.upstream_branch }}&path=${{ inputs.upstream_path }}&per_page=1" | jq -r '.[0].sha')"
+          elif [[ '${{ inputs.fetch_mode }}' == 'branch_head' ]]; then
+            latest_sha="$(curl -fsSL "https://api.github.com/repos/logseq/logseq/commits/${{ inputs.upstream_branch }}" | jq -r '.sha')"
+          else
+            echo "Unsupported fetch_mode: ${{ inputs.fetch_mode }}" >&2
+            exit 1
+          fi
+
+          if [[ -z "$latest_sha" || "$latest_sha" == 'null' ]]; then
+            echo '${{ inputs.empty_error }}' >&2
+            exit 1
+          fi
+
+          echo "sha=$latest_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Update tracked ref
+        id: update
+        shell: bash
+        run: |
+          set -euo pipefail
+          current_sha=''
+
+          if [[ -f '${{ inputs.tracked_ref_file }}' ]]; then
+            current_sha="$(tr -d '\r\n' < '${{ inputs.tracked_ref_file }}')"
+          fi
+
+          latest_sha='${{ steps.latest.outputs.sha }}'
+
+          if [[ "$latest_sha" == "$current_sha" ]]; then
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "$latest_sha" > '${{ inputs.tracked_ref_file }}'
+          echo 'changed=true' >> "$GITHUB_OUTPUT"
+          echo "old_sha=$current_sha" >> "$GITHUB_OUTPUT"
+          echo "new_sha=$latest_sha" >> "$GITHUB_OUTPUT"
+
+          if [[ -n "$current_sha" ]]; then
+            echo "compare_line=- Compare: https://github.com/logseq/logseq/compare/$current_sha...$latest_sha" >> "$GITHUB_OUTPUT"
+          else
+            echo 'compare_line=' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create pull request
+        if: steps.update.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v8.1.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ inputs.pr_branch }}
+          delete-branch: true
+          add-paths: |
+            ${{ inputs.tracked_ref_file }}
+          commit-message: "${{ inputs.commit_prefix }}${{ steps.update.outputs.new_sha }}"
+          title: "${{ inputs.title_prefix }}${{ steps.update.outputs.new_sha }}"
+          body: |
+            ${{ inputs.body_intro }}
+
+            - Previous: `${{ steps.update.outputs.old_sha }}`
+            - Current: `${{ steps.update.outputs.new_sha }}`
+            ${{ steps.update.outputs.compare_line }}
