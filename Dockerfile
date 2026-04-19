@@ -38,7 +38,7 @@ RUN --mount=type=cache,target=/root/.m2/repository mise exec -- npm run build:no
 RUN mise exec -- npm prune --omit=dev
 RUN mkdir -p /tmp/runtime-data
 
-FROM gcr.io/distroless/nodejs22-debian12:nonroot
+FROM gcr.io/distroless/nodejs24-debian12:nonroot
 WORKDIR /app
 
 COPY --chown=nonroot:nonroot --from=build /src/deps/db-sync/package.json /app/package.json
