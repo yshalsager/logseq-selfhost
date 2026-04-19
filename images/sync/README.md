@@ -2,7 +2,7 @@
 
 [![Build Image](https://github.com/yshalsager/logseq-selfhost/actions/workflows/build-selfhost-sync-image.yml/badge.svg)](https://github.com/yshalsager/logseq-selfhost/actions/workflows/build-selfhost-sync-image.yml)
 [![Bump Upstream Ref](https://github.com/yshalsager/logseq-selfhost/actions/workflows/bump-selfhost-sync-ref.yml/badge.svg)](https://github.com/yshalsager/logseq-selfhost/actions/workflows/bump-selfhost-sync-ref.yml)
-[![ghcr.io tag](https://ghcr-badge.egpl.dev/yshalsager/logseq-selfhost-sync/latest_tag?trim=major&label=GitHub%20Registry&color=steelblue)](https://github.com/yshalsager/logseq-selfhost/pkgs/container/logseq-selfhost-sync)
+[![ghcr.io tag](https://ghcr-badge.egpl.dev/yshalsager/logseq-selfhost-sync/latest_tag?ignore=latest,buildcache*,sha256*&trim=major&label=GitHub%20Registry&color=steelblue)](https://github.com/yshalsager/logseq-selfhost/pkgs/container/logseq-selfhost-sync)
 [![ghcr.io size](https://ghcr-badge.egpl.dev/yshalsager/logseq-selfhost-sync/size?tag=latest&label=Image%20size&color=steelblue)](https://github.com/yshalsager/logseq-selfhost/pkgs/container/logseq-selfhost-sync)
 [![License](https://img.shields.io/github/license/yshalsager/logseq-selfhost.svg)](https://github.com/yshalsager/logseq-selfhost/blob/master/LICENSE)
 
@@ -39,7 +39,7 @@ Triggers:
 
 - `workflow_dispatch` with optional `logseq_ref`, `image_tag`
 - Weekly fallback: Saturday 04:00 UTC
-- Push to `master` affecting sync files/workflow
+- Push to `master` affecting image build inputs (`Dockerfile`, pinned upstream ref, or shared `mise.toml`)
 
 Pinned upstream ref file: `images/sync/UPSTREAM_DB_SYNC_REF`
 
