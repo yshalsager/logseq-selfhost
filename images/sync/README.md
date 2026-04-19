@@ -1,10 +1,10 @@
 # Logseq Sync Server (Node Adapter)
 
-[![Build Image](https://github.com/yshalsager/logseq-sync-server/actions/workflows/build-sync-image.yml/badge.svg)](https://github.com/yshalsager/logseq-sync-server/actions/workflows/build-sync-image.yml)
-[![Bump Upstream Ref](https://github.com/yshalsager/logseq-sync-server/actions/workflows/bump-db-sync-ref.yml/badge.svg)](https://github.com/yshalsager/logseq-sync-server/actions/workflows/bump-db-sync-ref.yml)
-[![ghcr.io tag](https://ghcr-badge.egpl.dev/yshalsager/logseq-sync-server/latest_tag?trim=major&label=GitHub%20Registry&color=steelblue)](https://github.com/yshalsager/logseq-sync-server/pkgs/container/logseq-sync-server)
-[![ghcr.io size](https://ghcr-badge.egpl.dev/yshalsager/logseq-sync-server/size?tag=latest&label=Image%20size&color=steelblue)](https://github.com/yshalsager/logseq-sync-server/pkgs/container/logseq-sync-server)
-[![License](https://img.shields.io/github/license/yshalsager/logseq-sync-server.svg)](https://github.com/yshalsager/logseq-sync-server/blob/master/LICENSE)
+[![Build Image](https://github.com/yshalsager/logseq-selfhost/actions/workflows/build-selfhost-sync-image.yml/badge.svg)](https://github.com/yshalsager/logseq-selfhost/actions/workflows/build-selfhost-sync-image.yml)
+[![Bump Upstream Ref](https://github.com/yshalsager/logseq-selfhost/actions/workflows/bump-selfhost-sync-ref.yml/badge.svg)](https://github.com/yshalsager/logseq-selfhost/actions/workflows/bump-selfhost-sync-ref.yml)
+[![ghcr.io tag](https://ghcr-badge.egpl.dev/yshalsager/logseq-selfhost-sync/latest_tag?trim=major&label=GitHub%20Registry&color=steelblue)](https://github.com/yshalsager/logseq-selfhost/pkgs/container/logseq-selfhost-sync)
+[![ghcr.io size](https://ghcr-badge.egpl.dev/yshalsager/logseq-selfhost-sync/size?tag=latest&label=Image%20size&color=steelblue)](https://github.com/yshalsager/logseq-selfhost/pkgs/container/logseq-selfhost-sync)
+[![License](https://img.shields.io/github/license/yshalsager/logseq-selfhost.svg)](https://github.com/yshalsager/logseq-selfhost/blob/master/LICENSE)
 
 This image packages Logseq `deps/db-sync` node adapter for self-hosting.
 
@@ -33,7 +33,7 @@ Edit `images/sync/.env` values:
 
 ## Build and publish (GitHub Actions)
 
-Workflow: `.github/workflows/build-sync-image.yml`
+Workflow: `.github/workflows/build-selfhost-sync-image.yml`
 
 Triggers:
 
@@ -45,8 +45,8 @@ Pinned upstream ref file: `images/sync/UPSTREAM_DB_SYNC_REF`
 
 Published tags:
 
-- `ghcr.io/<GHCR_OWNER>/logseq-sync-server:<tag>`
-- `ghcr.io/<GHCR_OWNER>/logseq-sync-server:latest` (default branch builds)
+- `ghcr.io/<GHCR_OWNER>/logseq-selfhost-sync:<tag>`
+- `ghcr.io/<GHCR_OWNER>/logseq-selfhost-sync:latest` (default branch builds)
 
 ## Deploy
 
@@ -62,7 +62,7 @@ docker compose -f images/sync/docker-compose.yml up -d
 From repository root:
 
 ```bash
-IMAGE=ghcr.io/<GHCR_OWNER>/logseq-sync-server:<tag> ./images/sync/scripts/smoke-test.sh
+IMAGE=ghcr.io/<GHCR_OWNER>/logseq-selfhost-sync:<tag> ./images/sync/scripts/smoke-test.sh
 ```
 
 Default checks:
@@ -73,7 +73,7 @@ Default checks:
 
 ## Auto-track upstream
 
-Workflow: `.github/workflows/bump-db-sync-ref.yml`
+Workflow: `.github/workflows/bump-selfhost-sync-ref.yml`
 
 - Weekly Saturday 03:00 UTC
 - Tracks latest commit in `logseq/logseq` touching `deps/db-sync`

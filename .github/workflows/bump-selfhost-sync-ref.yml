@@ -1,4 +1,4 @@
-name: bump-db-sync-ref
+name: bump-selfhost-sync-ref
 
 on:
   workflow_dispatch:
@@ -11,13 +11,13 @@ permissions:
 
 jobs:
   bump:
-    uses: ./.github/workflows/bump-upstream-ref-reusable.yml
+    uses: ./.github/workflows/bump-selfhost-upstream-ref-reusable.yml
     with:
       tracked_ref_file: images/sync/UPSTREAM_DB_SYNC_REF
       fetch_mode: path_commit
       upstream_branch: master
       upstream_path: deps/db-sync
-      pr_branch: chore/bump-db-sync-ref
+      pr_branch: chore/bump-selfhost-sync-ref
       commit_prefix: 'chore: bump db-sync upstream ref to '
       title_prefix: 'chore: bump db-sync upstream ref to '
       body_intro: Automated update of upstream Logseq commit used for db-sync image builds.

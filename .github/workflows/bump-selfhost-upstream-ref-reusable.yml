@@ -1,4 +1,4 @@
-name: bump-upstream-ref-reusable
+name: bump-selfhost-upstream-ref-reusable
 
 on:
   workflow_call:

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-IMAGE="${IMAGE:-${1:-logseq-sync-server:local}}"
+IMAGE="${IMAGE:-${1:-logseq-selfhost-sync:local}}"
 PORT="${PORT:-18787}"
 DB_SYNC_ADMIN_TOKEN="${DB_SYNC_ADMIN_TOKEN:-smoke-admin-token}"
 GRAPH_ID="${GRAPH_ID:-smoke-graph}"
 BEARER_TOKEN="${BEARER_TOKEN:-}"
-CONTAINER_NAME="${CONTAINER_NAME:-logseq-sync-server-smoke}"
+CONTAINER_NAME="${CONTAINER_NAME:-logseq-selfhost-sync-smoke}"
 WAIT_SECONDS="${WAIT_SECONDS:-4}"
 MAX_HEALTH_RETRIES="${MAX_HEALTH_RETRIES:-20}"
 

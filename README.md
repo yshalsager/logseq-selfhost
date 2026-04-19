@@ -1,15 +1,15 @@
 # Logseq Self-hosted Images Monorepo
 
-[![Build Sync Image](https://github.com/yshalsager/logseq-sync-server/actions/workflows/build-sync-image.yml/badge.svg)](https://github.com/yshalsager/logseq-sync-server/actions/workflows/build-sync-image.yml)
-[![Build Web Image](https://github.com/yshalsager/logseq-sync-server/actions/workflows/build-web-image.yml/badge.svg)](https://github.com/yshalsager/logseq-sync-server/actions/workflows/build-web-image.yml)
-[![Bump Sync Ref](https://github.com/yshalsager/logseq-sync-server/actions/workflows/bump-db-sync-ref.yml/badge.svg)](https://github.com/yshalsager/logseq-sync-server/actions/workflows/bump-db-sync-ref.yml)
-[![Bump Web Ref](https://github.com/yshalsager/logseq-sync-server/actions/workflows/bump-logseq-db-ref.yml/badge.svg)](https://github.com/yshalsager/logseq-sync-server/actions/workflows/bump-logseq-db-ref.yml)
-[![License](https://img.shields.io/github/license/yshalsager/logseq-sync-server.svg)](https://github.com/yshalsager/logseq-sync-server/blob/master/LICENSE)
+[![Build Sync Image](https://github.com/yshalsager/logseq-selfhost/actions/workflows/build-selfhost-sync-image.yml/badge.svg)](https://github.com/yshalsager/logseq-selfhost/actions/workflows/build-selfhost-sync-image.yml)
+[![Build Web Image](https://github.com/yshalsager/logseq-selfhost/actions/workflows/build-selfhost-web-image.yml/badge.svg)](https://github.com/yshalsager/logseq-selfhost/actions/workflows/build-selfhost-web-image.yml)
+[![Bump Sync Ref](https://github.com/yshalsager/logseq-selfhost/actions/workflows/bump-selfhost-sync-ref.yml/badge.svg)](https://github.com/yshalsager/logseq-selfhost/actions/workflows/bump-selfhost-sync-ref.yml)
+[![Bump Web Ref](https://github.com/yshalsager/logseq-selfhost/actions/workflows/bump-selfhost-web-ref.yml/badge.svg)](https://github.com/yshalsager/logseq-selfhost/actions/workflows/bump-selfhost-web-ref.yml)
+[![License](https://img.shields.io/github/license/yshalsager/logseq-selfhost.svg)](https://github.com/yshalsager/logseq-selfhost/blob/master/LICENSE)
 
 This repository publishes two self-hosted images from one codebase:
 
-- `ghcr.io/<owner>/logseq-sync-server` (Logseq `deps/db-sync` node adapter)
-- `ghcr.io/<owner>/logseq-web` (Logseq DB web app static bundle)
+- `ghcr.io/<owner>/logseq-selfhost-sync` (Logseq `deps/db-sync` node adapter)
+- `ghcr.io/<owner>/logseq-selfhost-web` (Logseq DB web app static bundle)
 
 ## Layout
 

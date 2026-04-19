@@ -1,4 +1,4 @@
-name: build-sync-image
+name: build-selfhost-sync-image
 
 on:
   workflow_dispatch:
@@ -19,8 +19,8 @@ on:
     paths:
       - images/sync/**
       - mise.toml
-      - .github/workflows/build-image-reusable.yml
-      - .github/workflows/build-sync-image.yml
+      - .github/workflows/build-selfhost-image-reusable.yml
+      - .github/workflows/build-selfhost-sync-image.yml
 
 permissions:
   contents: read
@@ -28,13 +28,13 @@ permissions:
 
 jobs:
   build:
-    uses: ./.github/workflows/build-image-reusable.yml
+    uses: ./.github/workflows/build-selfhost-image-reusable.yml
     with:
-      image_name: logseq-sync-server
+      image_name: logseq-selfhost-sync
       dockerfile: images/sync/Dockerfile
       tracked_ref_file: images/sync/UPSTREAM_DB_SYNC_REF
       default_logseq_ref: master
-      cache_scope: logseq-sync-server
+      cache_scope: logseq-selfhost-sync
       build_timeout_minutes: 60
       logseq_ref: ${{ github.event.inputs.logseq_ref || '' }}
       image_tag: ${{ github.event.inputs.image_tag || '' }}

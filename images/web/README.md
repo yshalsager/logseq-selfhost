@@ -1,10 +1,10 @@
 # Logseq DB Web (Self-hosted)
 
-[![Build Image](https://github.com/yshalsager/logseq-sync-server/actions/workflows/build-web-image.yml/badge.svg)](https://github.com/yshalsager/logseq-sync-server/actions/workflows/build-web-image.yml)
-[![Bump Upstream Ref](https://github.com/yshalsager/logseq-sync-server/actions/workflows/bump-logseq-db-ref.yml/badge.svg)](https://github.com/yshalsager/logseq-sync-server/actions/workflows/bump-logseq-db-ref.yml)
-[![ghcr.io tag](https://ghcr-badge.egpl.dev/yshalsager/logseq-web/latest_tag?trim=major&label=GitHub%20Registry&color=steelblue)](https://github.com/yshalsager/logseq-sync-server/pkgs/container/logseq-web)
-[![ghcr.io size](https://ghcr-badge.egpl.dev/yshalsager/logseq-web/size?tag=latest&label=Image%20size&color=steelblue)](https://github.com/yshalsager/logseq-sync-server/pkgs/container/logseq-web)
-[![License](https://img.shields.io/github/license/yshalsager/logseq-sync-server.svg)](https://github.com/yshalsager/logseq-sync-server/blob/master/LICENSE)
+[![Build Image](https://github.com/yshalsager/logseq-selfhost/actions/workflows/build-selfhost-web-image.yml/badge.svg)](https://github.com/yshalsager/logseq-selfhost/actions/workflows/build-selfhost-web-image.yml)
+[![Bump Upstream Ref](https://github.com/yshalsager/logseq-selfhost/actions/workflows/bump-selfhost-web-ref.yml/badge.svg)](https://github.com/yshalsager/logseq-selfhost/actions/workflows/bump-selfhost-web-ref.yml)
+[![ghcr.io tag](https://ghcr-badge.egpl.dev/yshalsager/logseq-selfhost-web/latest_tag?trim=major&label=GitHub%20Registry&color=steelblue)](https://github.com/yshalsager/logseq-selfhost/pkgs/container/logseq-selfhost-web)
+[![ghcr.io size](https://ghcr-badge.egpl.dev/yshalsager/logseq-selfhost-web/size?tag=latest&label=Image%20size&color=steelblue)](https://github.com/yshalsager/logseq-selfhost/pkgs/container/logseq-selfhost-web)
+[![License](https://img.shields.io/github/license/yshalsager/logseq-selfhost.svg)](https://github.com/yshalsager/logseq-selfhost/blob/master/LICENSE)
 
 This image builds and serves the Logseq DB web app (PWA) from upstream `logseq/logseq`.
 
@@ -31,7 +31,7 @@ Edit `images/web/.env` values:
 
 ## Build and publish (GitHub Actions)
 
-Workflow: `.github/workflows/build-web-image.yml`
+Workflow: `.github/workflows/build-selfhost-web-image.yml`
 
 Triggers:
 
@@ -43,8 +43,8 @@ Pinned upstream ref file: `images/web/UPSTREAM_LOGSEQ_DB_REF`
 
 Published tags:
 
-- `ghcr.io/<GHCR_OWNER>/logseq-web:<tag>`
-- `ghcr.io/<GHCR_OWNER>/logseq-web:latest` (default branch builds)
+- `ghcr.io/<GHCR_OWNER>/logseq-selfhost-web:<tag>`
+- `ghcr.io/<GHCR_OWNER>/logseq-selfhost-web:latest` (default branch builds)
 
 ## Deploy
 
@@ -60,7 +60,7 @@ docker compose -f images/web/docker-compose.yml up -d
 From repository root:
 
 ```bash
-IMAGE=ghcr.io/<GHCR_OWNER>/logseq-web:<tag> ./images/web/scripts/smoke-test.sh
+IMAGE=ghcr.io/<GHCR_OWNER>/logseq-selfhost-web:<tag> ./images/web/scripts/smoke-test.sh
 ```
 
 Default checks:
@@ -75,7 +75,7 @@ Default checks:
 
 ## Auto-track upstream
 
-Workflow: `.github/workflows/bump-logseq-db-ref.yml`
+Workflow: `.github/workflows/bump-selfhost-web-ref.yml`
 
 - Weekly Saturday 03:00 UTC
 - Tracks latest commit at `logseq/logseq` branch `test/db`

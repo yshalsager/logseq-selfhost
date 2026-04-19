@@ -1,4 +1,4 @@
-name: build-web-image
+name: build-selfhost-web-image
 
 on:
   workflow_dispatch:
@@ -19,8 +19,8 @@ on:
     paths:
       - images/web/**
       - mise.toml
-      - .github/workflows/build-image-reusable.yml
-      - .github/workflows/build-web-image.yml
+      - .github/workflows/build-selfhost-image-reusable.yml
+      - .github/workflows/build-selfhost-web-image.yml
 
 permissions:
   contents: read
@@ -28,13 +28,13 @@ permissions:
 
 jobs:
   build:
-    uses: ./.github/workflows/build-image-reusable.yml
+    uses: ./.github/workflows/build-selfhost-image-reusable.yml
     with:
-      image_name: logseq-web
+      image_name: logseq-selfhost-web
       dockerfile: images/web/Dockerfile
       tracked_ref_file: images/web/UPSTREAM_LOGSEQ_DB_REF
       default_logseq_ref: test/db
-      cache_scope: logseq-web
+      cache_scope: logseq-selfhost-web
       build_timeout_minutes: 90
       logseq_ref: ${{ github.event.inputs.logseq_ref || '' }}
       image_tag: ${{ github.event.inputs.image_tag || '' }}

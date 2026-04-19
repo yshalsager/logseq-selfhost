@@ -1,4 +1,4 @@
-name: build-image-reusable
+name: build-selfhost-image-reusable
 
 on:
   workflow_call:
