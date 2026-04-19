@@ -17,10 +17,11 @@ on:
     branches:
       - master
     paths:
-      - images/web/**
+      - images/web/Dockerfile
+      - images/web/nginx.conf
+      - images/web/UPSTREAM_LOGSEQ_DB_REF
       - mise.toml
       - .github/workflows/build-selfhost-image-reusable.yml
-      - .github/workflows/build-selfhost-web-image.yml
 
 permissions:
   contents: read

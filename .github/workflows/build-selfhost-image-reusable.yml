@@ -55,6 +55,8 @@ jobs:
       image_tag: ${{ steps.vars.outputs.image_tag }}
       logseq_ref: ${{ steps.vars.outputs.logseq_ref }}
       publish_latest: ${{ steps.vars.outputs.publish_latest }}
+      should_build: ${{ steps.vars.outputs.should_build }}
+      skip_reason: ${{ steps.vars.outputs.skip_reason }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6.0.2
@@ -62,6 +64,8 @@ jobs:
       - name: Set vars
         id: vars
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           owner='${{ github.repository_owner }}'
           image_repo="ghcr.io/${owner}/${{ inputs.image_name }}"
@@ -92,14 +96,43 @@ jobs:
             publish_latest=true
           fi
 
+          should_build=true
+          skip_reason=''
+
+          if [[ '${{ github.event_name }}' == 'schedule' ]]; then
+            owner_type='${{ github.event.repository.owner.type }}'
+            endpoint=''
+            if [[ "$owner_type" == 'Organization' ]]; then
+              endpoint="/orgs/${owner}/packages/container/${{ inputs.image_name }}/versions?per_page=100"
+            else
+              endpoint="/users/${owner}/packages/container/${{ inputs.image_name }}/versions?per_page=100"
+            fi
+
+            short_ref="${logseq_ref:0:7}"
+            existing_tags="$(gh api --paginate "$endpoint" --jq '.[].metadata.container.tags[]?' 2>/dev/null || true)"
+            if grep -Eq "(^|-)${short_ref}$" <<<"$existing_tags"; then
+              should_build=false
+              skip_reason="schedule run skipped: image for ref ${short_ref} already exists"
+            fi
+          fi
+
           {
             echo "image_repo=$image_repo"
             echo "image_tag=$image_tag"
             echo "logseq_ref=$logseq_ref"
             echo "publish_latest=$publish_latest"
+            echo "should_build=$should_build"
+            echo "skip_reason=$skip_reason"
           } >> "$GITHUB_OUTPUT"
 
+      - name: Print skip reason
+        if: steps.vars.outputs.should_build != 'true'
+        shell: bash
+        run: |
+          echo '${{ steps.vars.outputs.skip_reason }}'
+
   build:
+    if: needs.meta.outputs.should_build == 'true'
     needs: meta
     runs-on: ${{ matrix.platform == 'linux/arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     timeout-minutes: ${{ inputs.build_timeout_minutes }}
@@ -168,6 +201,7 @@ jobs:
           retention-days: 1
 
   merge:
+    if: needs.meta.outputs.should_build == 'true'
     needs:
       - meta
       - build

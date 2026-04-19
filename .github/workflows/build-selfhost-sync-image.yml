@@ -17,10 +17,10 @@ on:
     branches:
       - master
     paths:
-      - images/sync/**
+      - images/sync/Dockerfile
+      - images/sync/UPSTREAM_DB_SYNC_REF
       - mise.toml
       - .github/workflows/build-selfhost-image-reusable.yml
-      - .github/workflows/build-selfhost-sync-image.yml
 
 permissions:
   contents: read
