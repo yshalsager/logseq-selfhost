@@ -27,7 +27,7 @@ This repository publishes two self-hosted images from one codebase:
 
 - [Logseq repository](https://github.com/logseq/logseq)
 - Custom sync server URL support: [logseq/logseq#12459](https://github.com/logseq/logseq/pull/12459)
-- DB web branch currently tracked: `test/db`
+- DB web branch currently tracked: `master`
 
 ## License
 

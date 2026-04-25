@@ -35,7 +35,7 @@ jobs:
       image_description: Self-hosted Logseq DB web app static image
       dockerfile: images/web/Dockerfile
       tracked_ref_file: images/web/UPSTREAM_LOGSEQ_DB_REF
-      default_logseq_ref: test/db
+      default_logseq_ref: master
       cache_scope: logseq-selfhost-web
       build_timeout_minutes: 90
       logseq_ref: ${{ github.event.inputs.logseq_ref || '' }}

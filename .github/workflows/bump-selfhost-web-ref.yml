@@ -15,10 +15,10 @@ jobs:
     with:
       tracked_ref_file: images/web/UPSTREAM_LOGSEQ_DB_REF
       fetch_mode: branch_head
-      upstream_branch: test/db
+      upstream_branch: master
       pr_branch: chore/bump-selfhost-web-ref
       commit_prefix: 'chore: bump Logseq DB upstream ref to '
       title_prefix: 'chore: bump Logseq DB upstream ref to '
       body_intro: Automated update of upstream Logseq commit used for DB web image builds.
-      empty_error: Failed to resolve latest test/db commit SHA from upstream
+      empty_error: Failed to resolve latest master commit SHA from upstream
     secrets: inherit

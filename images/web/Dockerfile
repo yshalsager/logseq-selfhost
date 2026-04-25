@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.23@sha256:2780b5c3bab67f1f76c781860de469442999ed1a0d7992a5efdf2cffc0e3d769
 FROM debian:trixie-slim@sha256:4ffb3a1511099754cddc70eb1b12e50ffdb67619aa0ab6c13fcd800a78ef7c7a AS build
-ARG LOGSEQ_REF=test/db
+ARG LOGSEQ_REF=master
 ARG MISE_VERSION=v2026.4.18
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -33,13 +33,13 @@ COPY mise.toml /src/mise.toml
 RUN mise trust /src/mise.toml
 RUN mise exec -- corepack enable
 
-RUN --mount=type=cache,target=/root/.cache/yarn \
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
     --mount=type=cache,target=/root/.m2/repository \
     export ENABLE_FILE_SYNC_PRODUCTION=true ENABLE_RTC_SYNC_PRODUCTION=true; \
-    mise exec -- yarn install --frozen-lockfile && \
-    mise exec -- yarn gulp:build && \
+    mise exec -- pnpm install --frozen-lockfile && \
+    mise exec -- pnpm run gulp:build && \
     mise exec -- clojure -M:cljs release app db-worker && \
-    mise exec -- yarn webpack-app-build
+    mise exec -- pnpm run webpack-app-build
 
 RUN mkdir -p /tmp/web && rsync -a --delete /src/static/ /tmp/web/
 

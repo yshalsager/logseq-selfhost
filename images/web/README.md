@@ -78,5 +78,5 @@ Default checks:
 Workflow: `.github/workflows/bump-selfhost-web-ref.yml`
 
 - Weekly Saturday 03:00 UTC
-- Tracks latest commit at `logseq/logseq` branch `test/db`
+- Tracks latest commit at `logseq/logseq` branch `master`
 - Updates `images/web/UPSTREAM_LOGSEQ_DB_REF` and opens PR
