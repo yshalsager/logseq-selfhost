@@ -7,6 +7,10 @@ on:
         description: Image name in GHCR (without owner)
         required: true
         type: string
+      image_description:
+        description: OCI image description
+        required: true
+        type: string
       dockerfile:
         description: Path to Dockerfile from repository root
         required: true
@@ -176,6 +180,10 @@ jobs:
           build-args: |
             LOGSEQ_REF=${{ needs.meta.outputs.logseq_ref }}
           tags: ${{ needs.meta.outputs.image_repo }}
+          labels: |
+            org.opencontainers.image.description=${{ inputs.image_description }}
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
           provenance: false
           sbom: false
           cache-from: |
@@ -232,6 +240,7 @@ jobs:
           set -euo pipefail
           image='${{ needs.meta.outputs.image_repo }}'
           image_tag='${{ needs.meta.outputs.image_tag }}'
+          image_description='${{ inputs.image_description }}'
 
           args=()
           while IFS= read -r digest; do
@@ -250,7 +259,13 @@ jobs:
             tags+=("-t" "${image}:latest")
           fi
 
-          docker buildx imagetools create "${tags[@]}" "${args[@]}"
+          annotations=(
+            "--annotation" "index:org.opencontainers.image.description=${image_description}"
+            "--annotation" "index:org.opencontainers.image.source=https://github.com/${{ github.repository }}"
+            "--annotation" "index:org.opencontainers.image.revision=${{ github.sha }}"
+          )
+
+          docker buildx imagetools create "${tags[@]}" "${annotations[@]}" "${args[@]}"
 
       - name: Inspect published tags
         shell: bash

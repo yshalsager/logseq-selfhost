@@ -32,6 +32,7 @@ jobs:
     uses: ./.github/workflows/build-selfhost-image-reusable.yml
     with:
       image_name: logseq-selfhost-web
+      image_description: Self-hosted Logseq DB web app static image
       dockerfile: images/web/Dockerfile
       tracked_ref_file: images/web/UPSTREAM_LOGSEQ_DB_REF
       default_logseq_ref: test/db

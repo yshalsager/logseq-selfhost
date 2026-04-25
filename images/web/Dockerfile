@@ -44,6 +44,7 @@ RUN --mount=type=cache,target=/root/.cache/yarn \
 RUN mkdir -p /tmp/web && rsync -a --delete /src/static/ /tmp/web/
 
 FROM nginxinc/nginx-unprivileged:stable-alpine@sha256:7377697a821c131a924a7105fafbe7414db4e9fcc77a6f08f776f33f141ec3f8
+LABEL org.opencontainers.image.description="Self-hosted Logseq DB web app static image"
 COPY images/web/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --chown=101:101 --from=build /tmp/web/ /usr/share/nginx/html/
 

@@ -31,6 +31,7 @@ jobs:
     uses: ./.github/workflows/build-selfhost-image-reusable.yml
     with:
       image_name: logseq-selfhost-sync
+      image_description: Self-hosted Logseq Sync Server image (db-sync node adapter)
       dockerfile: images/sync/Dockerfile
       tracked_ref_file: images/sync/UPSTREAM_DB_SYNC_REF
       default_logseq_ref: master

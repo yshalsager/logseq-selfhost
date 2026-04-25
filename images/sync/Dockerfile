@@ -40,6 +40,7 @@ RUN mkdir -p /tmp/runtime-data
 
 FROM gcr.io/distroless/nodejs24-debian12:nonroot@sha256:14d42e2511532589a7c7e01a753667a74fcc96266e137e8125006b87b0c32d0a
 WORKDIR /app
+LABEL org.opencontainers.image.description="Self-hosted Logseq Sync Server image (db-sync node adapter)"
 
 COPY --chown=nonroot:nonroot --from=build /src/deps/db-sync/package.json /app/package.json
 COPY --chown=nonroot:nonroot --from=build /src/deps/db-sync/pnpm-lock.yaml /app/pnpm-lock.yaml
