@@ -33,16 +33,16 @@ RUN mise trust /src/mise.toml
 
 WORKDIR /src/deps/db-sync
 RUN mise exec -- corepack enable
-RUN --mount=type=cache,target=/root/.cache/yarn mise exec -- yarn install --frozen-lockfile
-RUN --mount=type=cache,target=/root/.m2/repository mise exec -- npm run build:node-adapter
-RUN mise exec -- npm prune --omit=dev
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store mise exec -- pnpm install --frozen-lockfile
+RUN --mount=type=cache,target=/root/.m2/repository mise exec -- pnpm run build:node-adapter
+RUN mise exec -- pnpm prune --prod
 RUN mkdir -p /tmp/runtime-data
 
 FROM gcr.io/distroless/nodejs24-debian12:nonroot@sha256:14d42e2511532589a7c7e01a753667a74fcc96266e137e8125006b87b0c32d0a
 WORKDIR /app
 
 COPY --chown=nonroot:nonroot --from=build /src/deps/db-sync/package.json /app/package.json
-COPY --chown=nonroot:nonroot --from=build /src/deps/db-sync/yarn.lock /app/yarn.lock
+COPY --chown=nonroot:nonroot --from=build /src/deps/db-sync/pnpm-lock.yaml /app/pnpm-lock.yaml
 COPY --chown=nonroot:nonroot --from=build /src/deps/db-sync/node_modules /app/node_modules
 COPY --chown=nonroot:nonroot --from=build /src/deps/db-sync/worker /app/worker
 COPY --chown=nonroot:nonroot --from=build /tmp/runtime-data /app/data
