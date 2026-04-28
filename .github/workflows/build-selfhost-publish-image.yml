@@ -1,0 +1,43 @@
+name: build-selfhost-publish-image
+
+on:
+  workflow_dispatch:
+    inputs:
+      logseq_ref:
+        description: Upstream Logseq ref (branch, tag, or commit SHA)
+        required: false
+        default: ''
+      image_tag:
+        description: Optional image tag override
+        required: false
+        default: ''
+  schedule:
+    - cron: '0 4 * * 6'
+  push:
+    branches:
+      - master
+    paths:
+      - images/publish/Dockerfile
+      - images/publish/wrangler.selfhost.toml
+      - images/publish/UPSTREAM_PUBLISH_REF
+      - mise.toml
+      - .github/workflows/build-selfhost-image-reusable.yml
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    uses: ./.github/workflows/build-selfhost-image-reusable.yml
+    with:
+      image_name: logseq-selfhost-publish
+      image_description: Self-hosted Logseq Publish image (Wrangler local runtime)
+      dockerfile: images/publish/Dockerfile
+      tracked_ref_file: images/publish/UPSTREAM_PUBLISH_REF
+      default_logseq_ref: master
+      cache_scope: logseq-selfhost-publish
+      build_timeout_minutes: 60
+      logseq_ref: ${{ github.event.inputs.logseq_ref || '' }}
+      image_tag: ${{ github.event.inputs.image_tag || '' }}
+    secrets: inherit

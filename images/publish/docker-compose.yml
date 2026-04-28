@@ -1,0 +1,27 @@
+services:
+  publish:
+    image: ghcr.io/${GHCR_OWNER:-yshalsager}/logseq-selfhost-publish:${IMAGE_TAG:-latest}
+    container_name: logseq-selfhost-publish
+    env_file:
+      - path: .env.example
+        required: true
+      - path: .env
+        required: false
+    ports:
+      - '${PUBLISH_PORT:-8788}:8787'
+    volumes:
+      - publish_data:/data
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/worker/.wrangler/tmp:uid=1000,gid=1000,mode=1777
+      - /app/worker/node_modules/.mf:uid=1000,gid=1000,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    pull_policy: always
+
+volumes:
+  publish_data:

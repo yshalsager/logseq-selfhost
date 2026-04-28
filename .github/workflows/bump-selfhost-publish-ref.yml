@@ -1,0 +1,25 @@
+name: bump-selfhost-publish-ref
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * 6'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump:
+    uses: ./.github/workflows/bump-selfhost-upstream-ref-reusable.yml
+    with:
+      tracked_ref_file: images/publish/UPSTREAM_PUBLISH_REF
+      fetch_mode: path_commit
+      upstream_branch: master
+      upstream_path: deps/publish
+      pr_branch: chore/bump-selfhost-publish-ref
+      commit_prefix: 'chore: bump publish upstream ref to '
+      title_prefix: 'chore: bump publish upstream ref to '
+      body_intro: Automated update of upstream Logseq commit used for publish image builds.
+      empty_error: Failed to resolve latest publish commit SHA from upstream
+    secrets: inherit

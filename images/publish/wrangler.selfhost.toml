@@ -1,0 +1,19 @@
+name = "logseq-publish-selfhost"
+main = "dist/worker/main.js"
+compatibility_date = "2025-05-05"
+compatibility_flags = ["nodejs_compat"]
+
+[observability]
+enabled = false
+
+[[durable_objects.bindings]]
+name = "PUBLISH_META_DO"
+class_name = "PublishMetaDO"
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["PublishMetaDO"]
+
+[[r2_buckets]]
+binding = "PUBLISH_R2"
+bucket_name = "logseq-publish-local"
