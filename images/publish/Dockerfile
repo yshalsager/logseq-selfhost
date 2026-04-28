@@ -34,6 +34,8 @@ RUN mise trust /src/mise.toml
 WORKDIR /src/deps/publish
 RUN mise exec -- corepack enable
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store mise exec -- pnpm install --frozen-lockfile
+RUN mkdir -p /tmp/publish-runtime-node-modules \
+  && cp -a "$(readlink -f node_modules/mldoc)" /tmp/publish-runtime-node-modules/mldoc
 RUN --mount=type=cache,target=/root/.m2/repository mise exec -- pnpm run release
 
 FROM node:24-bookworm-slim@sha256:03eae3ef7e88a9de535496fb488d67e02b9d96a063a8967bae657744ecd513f2
@@ -47,12 +49,12 @@ RUN apt-get update \
 
 RUN npm install -g "wrangler@${WRANGLER_VERSION}" \
   && mkdir -p /app/worker /data/home /data/wrangler \
-  && npm install --prefix /app/worker --omit=dev --no-package-lock --no-save mldoc@1.5.9 \
   && mkdir -p /app/worker/.wrangler/tmp /app/worker/node_modules/.mf \
   && chown -R node:node /app /data
 
 WORKDIR /app/worker
 
+COPY --chown=node:node --from=build /tmp/publish-runtime-node-modules /app/worker/node_modules
 COPY --chown=node:node --from=build /src/deps/publish/worker /app/worker
 COPY --chown=node:node images/publish/wrangler.selfhost.toml /app/worker/wrangler.selfhost.toml
 
