@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.23@sha256:2780b5c3bab67f1f76c781860de469442999ed1a0d7992a5efdf2cffc0e3d769
 FROM debian:trixie-slim@sha256:109e2c65005bf160609e4ba6acf7783752f8502ad218e298253428690b9eaa4b AS build
 ARG LOGSEQ_REF=master
-ARG MISE_VERSION=v2026.5.1
+ARG MISE_VERSION=v2026.5.6
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PATH=/root/.local/bin:$PATH
