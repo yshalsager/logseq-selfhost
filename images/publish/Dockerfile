@@ -1,5 +1,5 @@
-# syntax=docker/dockerfile:1.23@sha256:2780b5c3bab67f1f76c781860de469442999ed1a0d7992a5efdf2cffc0e3d769
-FROM debian:trixie-slim@sha256:109e2c65005bf160609e4ba6acf7783752f8502ad218e298253428690b9eaa4b AS build
+# syntax=docker/dockerfile:1.24@sha256:87999aa3d42bdc6bea60565083ee17e86d1f3339802f543c0d03998580f9cb89
+FROM debian:trixie-slim@sha256:b6e2a152f22a40ff69d92cb397223c906017e1391a73c952b588e51af8883bf8 AS build
 ARG LOGSEQ_REF=master
 ARG MISE_VERSION=v2026.5.6
 
@@ -38,7 +38,7 @@ RUN mkdir -p /tmp/publish-runtime-node-modules \
   && cp -a "$(readlink -f node_modules/mldoc)" /tmp/publish-runtime-node-modules/mldoc
 RUN --mount=type=cache,target=/root/.m2/repository mise exec -- pnpm run release
 
-FROM node:24-bookworm-slim@sha256:24dc26ef1e3c3690f27ebc4136c9c186c3133b25563ae4d7f0692e4d1fe5db0e
+FROM node:24-bookworm-slim@sha256:4e6b70dd6cbfc88c8157ba19aa3d9f9cce6ba4703576d55459e45efcbc9c5f5d
 ARG WRANGLER_VERSION=latest
 
 LABEL org.opencontainers.image.description="Self-hosted Logseq Publish image (Wrangler local runtime)"
