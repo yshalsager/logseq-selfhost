@@ -22,6 +22,7 @@
     },
     {
       matchManagers: ['dockerfile', 'docker-compose'],
+      matchUpdateTypes: ['major', 'minor', 'patch'],
       groupName: 'container stack',
     },
   ],
