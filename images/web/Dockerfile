@@ -43,7 +43,7 @@ RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
 
 RUN mkdir -p /tmp/web && rsync -a --delete /src/static/ /tmp/web/
 
-FROM nginxinc/nginx-unprivileged:stable-alpine@sha256:df0e9edf92b8436ff797fe5a2cbfc66be1df775c113d322ccadf5c7f3100eda8
+FROM nginxinc/nginx-unprivileged:stable-alpine@sha256:fafa1102c789119971b3d83f9293f1ef5526bc73583a12e13ff5cd1299ed8b6c
 LABEL org.opencontainers.image.description="Self-hosted Logseq DB web app static image"
 COPY images/web/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --chown=101:101 --from=build /tmp/web/ /usr/share/nginx/html/
