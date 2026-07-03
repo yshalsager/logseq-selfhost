@@ -38,7 +38,7 @@ RUN mkdir -p /tmp/publish-runtime-node-modules \
   && cp -a "$(readlink -f node_modules/mldoc)" /tmp/publish-runtime-node-modules/mldoc
 RUN --mount=type=cache,target=/root/.m2/repository mise exec -- pnpm run release
 
-FROM node:24-bookworm-slim@sha256:c2d5ade763cacfb03fe9cb8e8af5d1be5041ff331921fa26a9b231ca3a4f780a
+FROM node:24-bookworm-slim@sha256:b31e7a42fdf8b8aa5f5ed477c72d694301273f1069c5a2f71d53c6482e99a2fc
 ARG WRANGLER_VERSION=latest
 
 LABEL org.opencontainers.image.description="Self-hosted Logseq Publish image (Wrangler local runtime)"
