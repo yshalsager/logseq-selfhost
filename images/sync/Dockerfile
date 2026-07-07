@@ -35,7 +35,7 @@ WORKDIR /src/deps/db-sync
 RUN mise exec -- corepack enable
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store mise exec -- pnpm install --frozen-lockfile
 RUN --mount=type=cache,target=/root/.m2/repository mise exec -- pnpm run build:node-adapter
-RUN mise exec -- pnpm prune --prod
+RUN CI=true mise exec -- pnpm prune --prod
 RUN mkdir -p /tmp/runtime-data
 
 FROM gcr.io/distroless/nodejs24-debian12:nonroot@sha256:14d42e2511532589a7c7e01a753667a74fcc96266e137e8125006b87b0c32d0a
