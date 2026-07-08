@@ -33,9 +33,19 @@ RUN mise trust /src/mise.toml
 
 WORKDIR /src/deps/db-sync
 RUN mise exec -- corepack enable
-RUN --mount=type=cache,target=/root/.local/share/pnpm/store mise exec -- pnpm install --frozen-lockfile
+
+# --ignore-workspace: /src has an ancestor pnpm-workspace.yaml (with
+# shamefully-hoist=true, set for the main logseq app's shadow-cljs builds)
+# that pnpm picks up even though deps/db-sync isn't a declared workspace
+# member. Without this flag, deps/db-sync's dependencies get hoisted and
+# symlinked into /src/node_modules/.pnpm instead of a local store, so
+# copying only deps/db-sync/node_modules below (as this Dockerfile
+# previously did) ships dangling symlinks -- see "Cannot find module 'ws'"
+# crash loop. --ignore-workspace forces a fully self-contained install
+# scoped to deps/db-sync.
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store mise exec -- pnpm install --frozen-lockfile --ignore-workspace
 RUN --mount=type=cache,target=/root/.m2/repository mise exec -- pnpm run build:node-adapter
-RUN CI=true mise exec -- pnpm prune --prod
+RUN CI=true mise exec -- pnpm prune --prod --ignore-workspace
 RUN mkdir -p /tmp/runtime-data
 
 FROM gcr.io/distroless/nodejs24-debian12:nonroot@sha256:14d42e2511532589a7c7e01a753667a74fcc96266e137e8125006b87b0c32d0a
