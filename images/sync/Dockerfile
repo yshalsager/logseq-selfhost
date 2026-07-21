@@ -44,6 +44,14 @@ RUN mise exec -- corepack enable
 # crash loop. --ignore-workspace forces a fully self-contained install
 # scoped to deps/db-sync.
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store mise exec -- pnpm install --frozen-lockfile --ignore-workspace
+
+# mldoc: node-adapter.js's compiled bundle calls require('mldoc'), but
+# deps/db-sync/package.json doesn't declare it as a dependency (it's only
+# declared in the main logseq/logseq package.json, at ^1.5.9). Without this,
+# the container crash-loops with "Cannot find module 'mldoc'". Installing it
+# explicitly here until upstream adds it to deps/db-sync/package.json.
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store mise exec -- pnpm add mldoc@^1.5.9 --ignore-workspace
+
 RUN --mount=type=cache,target=/root/.m2/repository mise exec -- pnpm run build:node-adapter
 RUN CI=true mise exec -- pnpm prune --prod --ignore-workspace
 RUN mkdir -p /tmp/runtime-data
