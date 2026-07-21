@@ -45,14 +45,8 @@ RUN mise exec -- corepack enable
 # scoped to deps/db-sync.
 RUN --mount=type=cache,target=/root/.local/share/pnpm/store mise exec -- pnpm install --frozen-lockfile --ignore-workspace
 
-# db-sync bundles graph-parser, so ship its external JS dependency from graph-parser's lockfile.
-RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
-  mise exec -- pnpm --dir ../graph-parser install --prod --frozen-lockfile --ignore-workspace
-
 RUN --mount=type=cache,target=/root/.m2/repository mise exec -- pnpm run build:node-adapter
 RUN CI=true mise exec -- pnpm prune --prod --ignore-workspace
-RUN cp -a "$(readlink -f ../graph-parser/node_modules/mldoc)" node_modules/mldoc \
-  && mise exec -- node -e "require('mldoc')"
 RUN mkdir -p /tmp/runtime-data
 
 FROM gcr.io/distroless/nodejs24-debian12:nonroot@sha256:14d42e2511532589a7c7e01a753667a74fcc96266e137e8125006b87b0c32d0a
