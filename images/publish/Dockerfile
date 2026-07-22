@@ -33,7 +33,9 @@ RUN mise trust /src/mise.toml
 
 WORKDIR /src/deps/publish
 RUN mise exec -- corepack enable
-RUN --mount=type=cache,target=/root/.local/share/pnpm/store mise exec -- pnpm install --frozen-lockfile
+
+# --ignore-workspace: keep this install self-contained, same as images/sync/Dockerfile.
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store mise exec -- pnpm install --frozen-lockfile --ignore-workspace
 RUN mkdir -p /tmp/publish-runtime-node-modules \
   && cp -a "$(readlink -f node_modules/mldoc)" /tmp/publish-runtime-node-modules/mldoc
 RUN --mount=type=cache,target=/root/.m2/repository mise exec -- pnpm run release
