@@ -21,5 +21,39 @@ services:
     restart: unless-stopped
     pull_policy: always
 
+  dashboard:
+    profiles:
+      - dashboard
+    image: ghcr.io/${GHCR_OWNER:-yshalsager}/logseq-selfhost-sync-dashboard:latest
+    container_name: logseq-selfhost-sync-dashboard
+    env_file:
+      - path: dashboard.env.example
+        required: true
+      - path: dashboard.env
+        required: false
+    ports:
+      - '127.0.0.1:8080:8080'
+    volumes:
+      - sync_data:/data:ro
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=2)"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    pull_policy: always
+
 volumes:
   sync_data:

@@ -71,6 +71,60 @@ Default checks:
 - `/graphs` returns `401` without auth
 - `/sync/<graph-id>/pull?since=0` returns `401` without auth
 
+## Optional read-only dashboard
+
+The dashboard is an optional sidecar for the Sync service. It reads the same
+`sync_data` volume as read-only and exposes redacted operational metadata:
+
+- user and graph counts, plus seven-day activity
+- graph name, shortened ID, E2EE/ready/schema state
+- transaction count, latest `t`, last sync time and shortened checksum
+- graph database size and asset count/size/update time
+
+It never queries the graph `kvs` table or reads asset contents, email addresses,
+JWTs or admin tokens. It does not mount the Docker socket. Host CPU, container
+restarts and system backup status are intentionally out of scope because the
+sidecar has no portable, least-privilege source for them.
+
+Copy and configure the optional sidecar environment if needed, then enable the
+Compose profile:
+
+```bash
+cp images/sync/dashboard.env.example images/sync/dashboard.env
+docker compose -f images/sync/docker-compose.yml --profile dashboard pull
+docker compose -f images/sync/docker-compose.yml --profile dashboard up -d
+```
+
+The default listener is `127.0.0.1:8080`, and the dashboard is served below
+`/dashboard/`. Both Basic Auth values are optional: leave
+`DASHBOARD_USERNAME` and `DASHBOARD_PASSWORD` empty to disable application-level
+authentication, or set both to enable it. Setting only one makes the sidecar
+fail fast.
+
+Expose it below the same Sync hostname with Caddy. Use `handle`, rather than
+`handle_path`, so the dashboard receives its `/dashboard` base path:
+
+```caddyfile
+sync.example.com {
+	@dashboard path /dashboard /dashboard/*
+	handle @dashboard {
+		reverse_proxy 127.0.0.1:8080
+	}
+
+	handle {
+		reverse_proxy 127.0.0.1:8787
+	}
+}
+```
+
+The equivalent nginx location is:
+
+```nginx
+location /dashboard/ {
+    proxy_pass http://127.0.0.1:8080;
+}
+```
+
 ## Auto-track upstream
 
 Workflow: `.github/workflows/bump-selfhost-sync-ref.yml`

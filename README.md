@@ -8,17 +8,19 @@
 [![Bump Web Ref](https://github.com/yshalsager/logseq-selfhost/actions/workflows/bump-selfhost-web-ref.yml/badge.svg)](https://github.com/yshalsager/logseq-selfhost/actions/workflows/bump-selfhost-web-ref.yml)
 [![License](https://img.shields.io/github/license/yshalsager/logseq-selfhost.svg)](https://github.com/yshalsager/logseq-selfhost/blob/master/LICENSE)
 
-This repository publishes three self-hosted images from one codebase:
+This repository publishes four self-hosted images from one codebase:
 
 - `ghcr.io/<owner>/logseq-selfhost-sync` (Logseq `deps/db-sync` node adapter)
 - `ghcr.io/<owner>/logseq-selfhost-publish` (Logseq `deps/publish` worker through Wrangler local runtime)
 - `ghcr.io/<owner>/logseq-selfhost-web` (Logseq DB web app static bundle)
+- `ghcr.io/<owner>/logseq-selfhost-sync-dashboard` (optional read-only Sync operations dashboard)
 
 ## Layout
 
 - `images/sync`: sync image Docker/build/deploy/smoke files
 - `images/publish`: publish image Docker/build/deploy/smoke files
 - `images/web`: web image Docker/build/deploy/smoke files
+- `images/sync/dashboard`: optional dashboard sidecar for the Sync data volume
 - `.github/workflows`: reusable build/bump workflows and thin wrappers
 - `mise.toml`: shared pinned toolchain for image builds
 

@@ -1,0 +1,53 @@
+name: build-selfhost-sync-dashboard-image
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: Optional image tag override
+        required: false
+        default: ''
+  pull_request:
+    paths:
+      - images/sync/dashboard/**
+      - images/sync/dashboard.env.example
+      - images/sync/docker-compose.yml
+      - images/sync/README.md
+      - .github/workflows/build-selfhost-sync-dashboard-image.yml
+  push:
+    branches:
+      - master
+    paths:
+      - images/sync/dashboard/**
+      - .github/workflows/build-selfhost-sync-dashboard-image.yml
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Test dashboard
+        run: |
+          python3 -m unittest discover -s images/sync/dashboard/tests -v
+          python3 -m py_compile images/sync/dashboard/server.py
+          node --check images/sync/dashboard/static/app.js
+
+  build:
+    if: github.event_name != 'pull_request'
+    needs: test
+    uses: ./.github/workflows/build-selfhost-image-reusable.yml
+    with:
+      image_name: logseq-selfhost-sync-dashboard
+      image_description: Read-only dashboard for the Logseq DB Sync Node Adapter
+      dockerfile: images/sync/dashboard/Dockerfile
+      tracked_ref_file: images/sync/dashboard/IMAGE_REF
+      default_logseq_ref: standalone
+      cache_scope: logseq-selfhost-sync-dashboard
+      build_timeout_minutes: 30
+      image_tag: ${{ github.event.inputs.image_tag || '' }}
+    secrets: inherit
