@@ -1,5 +1,3 @@
-
-
 # Logseq Self-hosted Images Monorepo
 
 [![Build Sync Image](https://github.com/yshalsager/logseq-selfhost/actions/workflows/build-selfhost-sync-image.yml/badge.svg)](https://github.com/yshalsager/logseq-selfhost/actions/workflows/build-selfhost-sync-image.yml)
