@@ -2,7 +2,7 @@
 node = '24'
 java = 'openjdk-21.0.2'
 clojure = '1.12'
-wrangler = { version = '4.124.0', allow_builds = ['esbuild', 'workerd'] }
+wrangler = { version = '4.126.0', allow_builds = ['esbuild', 'workerd'] }
 
 [settings.npm]
 package_manager = 'npm'
